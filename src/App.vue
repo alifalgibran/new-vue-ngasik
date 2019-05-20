@@ -1,31 +1,48 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+    <v-app>
+      <Navbar v-if="authenticated" />
+       <!-- <router-link v-if="authenticated" to="/masuk" v-on:click.native="logout()" replace>Logout</router-link> -->
+    <v-content>
+        <router-view  @authenticated="setAuthenticated" />
+     </v-content>
+   </v-app>
 </template>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+<script>
+import Navbar from '@/components/Navbar'
+import VueSession from 'vue-session'
+    export default {
+        name: 'App',
+        components: {
+             Navbar
+        },
+        data() {
+            return {
+                authenticated: false,
+                mockAccount: {
+                    username1: "123",
+                    password1: "123"
+                }
+            }
+        },
+        beforeCreate(){
+            if (this.$session.get("logged_in") == false) {
+            this.$router.push('/')
+            }
+        },
+        mounted() {
+            if(!this.authenticated) {
+                this.$router.replace({ name: "login" });
+            }
+        },
+        methods: {
+            setAuthenticated(status) {
+                this.authenticated = status;
+            },
+            logout() {
+                window.history.forward(1)
+                this.authenticated = false;
+            }
+        }
+    }
+</script>
